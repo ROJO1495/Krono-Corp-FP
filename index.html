@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Krono - Recuperar contraseña</title>
+  <title>Krono</title>
   <style>
     body {
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -29,7 +29,7 @@
     a.btn {
       display: inline-block;
       margin-top: 16px;
-      background: #0B5BC4;
+      background: #0A5BC4;
       color: #fff;
       text-decoration: none;
       padding: 14px 24px;
@@ -41,7 +41,7 @@
 </head>
 <body>
   <div class="card">
-    <h1>Recuperar contraseña</h1>
+    <h1 id="titulo">Krono</h1>
     <p id="msg">Abriendo la app Krono…</p>
     <a id="btn" class="btn" href="#" style="display:none">Abrir la app</a>
   </div>
@@ -51,8 +51,14 @@
       var params = new URLSearchParams(window.location.search);
       var userId = params.get("userId");
       var secret = params.get("secret");
+      // "verify" = verificación de correo; cualquier otro valor = recuperación de contraseña
+      var tipo = params.get("tipo") === "verify" ? "verify" : "recovery";
+
+      var titulo = document.getElementById("titulo");
       var msg = document.getElementById("msg");
       var btn = document.getElementById("btn");
+
+      titulo.textContent = tipo === "verify" ? "Verificar correo" : "Recuperar contraseña";
 
       if (!userId || !secret) {
         msg.textContent = "El enlace no es válido o está incompleto. Solicita uno nuevo desde la app.";
@@ -63,11 +69,8 @@
       var query = "userId=" + encodeURIComponent(userId) +
                   "&secret=" + encodeURIComponent(secret);
 
-      // Deep link directo
-      var deepLink = "kronocorp://recovery?" + query;
-
-      // En Android Chrome, el esquema "intent://" es más confiable
-      var intentLink = "intent://recovery?" + query +
+      var deepLink = "kronocorp://" + tipo + "?" + query;
+      var intentLink = "intent://" + tipo + "?" + query +
         "#Intent;scheme=kronocorp;package=com.example.krono_corp;end";
 
       var esAndroid = /android/i.test(navigator.userAgent);
@@ -75,9 +78,11 @@
 
       btn.href = destino;
       btn.style.display = "inline-block";
-      msg.textContent = "Si la app no se abre automáticamente, toca el botón.";
+      msg.textContent = esAndroid
+        ? "Si la app no se abre automáticamente, toca el botón."
+        : "Abre este enlace desde el celular donde tienes instalada la app Krono.";
 
-      window.location.href = destino;
+      if (esAndroid) window.location.href = destino;
     })();
   </script>
 </body>
