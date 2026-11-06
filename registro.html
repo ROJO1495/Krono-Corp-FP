@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Invitación a Krono</title>
+  <style>
+    :root { --azul: #1d4ed8; --azul-claro: #e8efff; --texto: #0f172a; --suave: #64748b; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #f5f7fb; color: var(--texto); padding: 20px;
+    }
+    main {
+      width: 100%; max-width: 420px; background: #fff; border-radius: 16px;
+      padding: 32px 24px; text-align: center; box-shadow: 0 4px 24px rgba(15, 23, 42, .08);
+    }
+    .icono {
+      width: 56px; height: 56px; border-radius: 12px; background: var(--azul-claro);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px;
+    }
+    h1 { font-size: 22px; margin: 0 0 8px; }
+    p { font-size: 14px; color: var(--suave); line-height: 1.5; margin: 0 0 20px; }
+    .boton {
+      display: block; width: 100%; padding: 14px; border-radius: 10px; background: var(--azul);
+      color: #fff; font-weight: 600; font-size: 15px; text-decoration: none;
+    }
+    .nota { font-size: 12px; margin-top: 16px; margin-bottom: 0; }
+    .error { color: #b91c1c; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="icono">🛡️</div>
+    <h1>Te invitaron a Krono</h1>
+    <p id="texto">Te sumaron a un equipo como Supervisor de Ventas. Toca el botón para abrir la app y completar tu registro.</p>
+    <a id="abrir" class="boton" href="#">Abrir en la app Krono</a>
+    <p class="nota" id="nota">Si no se abre, verifica que tengas la app Krono instalada y vuelve a tocar el botón.</p>
+  </main>
+
+  <script>
+    (function () {
+      var codigo = new URLSearchParams(window.location.search).get("codigo") || "";
+      var boton = document.getElementById("abrir");
+      var texto = document.getElementById("texto");
+      var nota = document.getElementById("nota");
+
+      // Solo letras, números y guion bajo (el mismo formato del código que genera la app)
+      if (!/^[A-Za-z0-9_]{10,36}$/.test(codigo)) {
+        boton.style.display = "none";
+        texto.textContent = "Este enlace de invitación no es válido. Pídele a tu gerente uno nuevo.";
+        texto.className = "error";
+        nota.style.display = "none";
+        return;
+      }
+
+      var destino = "kronocorp://registro?codigo=" + encodeURIComponent(codigo);
+      boton.href = destino;
+
+      // Intento automático; si el navegador lo bloquea, queda el botón
+      setTimeout(function () { window.location.href = destino; }, 300);
+    })();
+  </script>
+</body>
+</html>
